@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthy Meal Plan</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { width: 300px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; display: none; }
+        input { width: 100%; margin: 10px 0; padding: 8px; }
+        button { width: 100%; padding: 10px; background-color: green; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: darkgreen; }
+        .home { background: url('https://www.weight-doctors.com/wp-content/uploads/2022/05/iStock-8547254021-scaled.jpg') no-repeat center center/cover; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .home button { margin: 10px; padding: 15px; font-size: 16px; }
+
+        /* Main Page Styles */
+        .main-page { display: none; padding: 20px; }
+        .tab { background-color: green; color: white; padding: 10px; margin: 5px; cursor: pointer; display: inline-block; }
+        .tab:hover { background-color: darkgreen; }
+        .tab-content { display: none; padding: 20px; border: 1px solid #ccc; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <!-- Home Page -->
+    <div class="home" id="homePage">
+        <h1>Welcome to Healthy Meal Plan</h1>
+        <button onclick="showLogin()">Login</button>
+        <button onclick="showSignup()">Sign Up</button>
+        <button onclick="window.location.href='help.html'">Help</button>
+    </div>
+    
+    <!-- Login Page -->
+    <div class="container" id="loginContainer">
+        <h2>Login</h2>
+        <input type="text" id="loginEmail" placeholder="Email" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button onclick="login()">Login</button>
+        <p>Don't have an account? <a href="#" onclick="showSignup()">Sign up</a></p>
+    </div>
+    
+    <!-- Signup Page -->
+    <div class="container" id="signupContainer">
+        <h2>Sign Up</h2>
+        <input type="text" id="signupEmail" placeholder="Email" required>
+        <input type="password" id="signupPassword" placeholder="Password" required>
+        <button onclick="signup()">Sign Up</button>
+        <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+    </div>
+
+    <!-- Main Page with Meal Plans -->
+    <div class="main-page" id="mainPage">
+        <h1>Healthy Meal Plans</h1>
+        <div class="tab" onclick="showPlan('keto')">Keto Plan</div>
+        <div class="tab" onclick="showPlan('calorie')">Calorie Deficient Plan</div>
+        <div class="tab" onclick="showPlan('bulk')">Bulk Plan</div>
+        <div class="tab" onclick="showPlan('vegan')">Vegan Plan</div>
+        <div class="tab" onclick="showPlan('mediterranean')">Mediterranean Plan</div>
+
+        <div id="keto" class="tab-content">
+            <h2>Keto Plan</h2>
+            <p>Low-carb, high-fat meals for weight loss.</p>
+        </div>
+        <div id="calorie" class="tab-content">
+            <h2>Calorie Deficient Plan</h2>
+            <p>Low-calorie meals for healthy weight management.</p>
+        </div>
+        <div id="bulk" class="tab-content">
+            <h2>Bulk Plan</h2>
+            <p>High-protein meals for muscle gain.</p>
+        </div>
+        <div id="vegan" class="tab-content">
+            <h2>Vegan Plan</h2>
+            <p>Plant-based meals for a healthier diet.</p>
+        </div>
+        <div id="mediterranean" class="tab-content">
+            <h2>Mediterranean Plan</h2>
+            <p>Heart-healthy meals with olive oil, fish, and vegetables.</p>
+        </div>
+    </div>
+
+    <script>
+        function showSignup() {
+            document.getElementById("homePage").style.display = "none";
+            document.getElementById("loginContainer").style.display = "none";
+            document.getElementById("signupContainer").style.display = "block";
+        }
+
+        function showLogin() {
+            document.getElementById("homePage").style.display = "none";
+            document.getElementById("signupContainer").style.display = "none";
+            document.getElementById("loginContainer").style.display = "block";
+        }
+
+        async function signup() {
+            let email = document.getElementById("signupEmail").value;
+            let password = document.getElementById("signupPassword").value;
+
+            if (!email || !password) {
+                alert("Please fill in all fields");
+                return;
+            }
+
+            let response = await fetch("http://127.0.0.1:5000/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            let result = await response.json();
+            alert(result.message);
+
+            if (response.status === 200) {
+                goToMainPage();
+            }
+        }
+
+        async function login() {
+            let email = document.getElementById("loginEmail").value;
+            let password = document.getElementById("loginPassword").value;
+
+            let response = await fetch("http://127.0.0.1:5000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            let result = await response.json();
+            alert(result.message);
+
+            if (response.status === 200) {
+                goToMainPage();
+            }
+        }
+
+        function goToMainPage() {
+            document.getElementById("signupContainer").style.display = "none";
+            document.getElementById("loginContainer").style.display = "none";
+            document.getElementById("homePage").style.display = "none";
+            document.getElementById("mainPage").style.display = "block";
+        }
+
+        function showPlan(planId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = "none";
+            });
+            document.getElementById(planId).style.display = "block";
+        }
+    </script>
+</body>
+</html>
